@@ -14,6 +14,8 @@ const RecipeDetails = () => {
     .filter((x) => x.includes("strMeasure") && newRecipe[x]?.trim())
     .map((x) => newRecipe[x]);
 
+  console.log(newRecipe.strInstructions);
+
   return (
     <div className="recipe-details-container">
       <button className="back-btn" onClick={() => navigate(-1)}>
@@ -39,14 +41,9 @@ const RecipeDetails = () => {
       <div className="instructions">
         <p className="section-title">Instructions</p>
         <ol className="instructions-list">
-          {newRecipe.strInstructions
-            .replace(/STEP \d+ [A-Z\s]*?:?/g, "") // Remove "STEP X ..." text
-            .trim()
-            .split(/\.\s+/) // Split at period followed by space
-            .filter((sentence) => sentence.trim() !== "") // Remove empty strings
-            .map((sentence, index) => (
-              <li key={index}>{sentence.trim() + "."}</li>
-            ))}
+          {newRecipe.strInstructions.split(/\.\s+/).map((sentence, index) => (
+            <li key={index}>{sentence+"."}</li>
+          ))}
         </ol>
       </div>
     </div>

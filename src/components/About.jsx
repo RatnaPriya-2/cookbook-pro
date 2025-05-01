@@ -5,8 +5,8 @@ const About = () => {
     <>
       <div className="about-main-body">
         <section className="introduction">
-          <h3>Welcome to Recipe Finder!</h3>
-          At Recipe Finder, we believe that cooking should be fun, easy, and
+          <h3>Welcome to CookBook Pro!</h3>
+          At CookBook Pro, we believe that cooking should be fun, easy, and
           accessible to everyone. Whether you're a seasoned chef or a beginner
           in the kitchen, our app is here to help you discover delicious recipes
           tailored to your tastes and dietary preferences. From quick weekday
@@ -23,7 +23,7 @@ const About = () => {
           </p>
         </section>
         <section className="why">
-          <h3>Why Choose Recipe Finder?</h3>
+          <h3>Why Choose CookBook Pro?</h3>
           <p>
             <span>Step-by-Step Instructions</span>: Follow easy-to-understand
             guides with photos and videos.
@@ -38,7 +38,7 @@ const About = () => {
         <section className="team">
           <h3>Meet the Team</h3>
           <p>
-            Recipe Finder was created by a passionate team of food lovers,
+            CookBook Pro was created by a passionate team of food lovers,
             developers, and designers who share a common goal: to make cooking
             easier and more enjoyable for everyone. We’re constantly working to
             improve the app and bring you the best possible experience.
@@ -48,7 +48,7 @@ const About = () => {
           <h3>We’d Love to Hear From You!</h3>
           <p>
             Have feedback, questions, or suggestions? We’re always here to help.
-            Reach out to us at <span>support@recipefinder.com</span> or connect
+            Reach out to us at <span>support@cookbookpro.com</span> or connect
             with us on social media- <span>Facebook</span>
             <span>Instagram</span>
             <span>Twitter</span>
