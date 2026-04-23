@@ -49,9 +49,11 @@ const RecipeCard = ({ newRecipe, isFavorite, onToggleFavorite }) => {
               Get Recipe
             </button>
 
-            <button onClick={handleWatchRecipe} className="watch-recipe">
-              Watch Recipe
-            </button>
+            {newRecipe.strYoutube && (
+              <button onClick={handleWatchRecipe} className="watch-recipe">
+                Watch Recipe
+              </button>
+            )}
           </div>
         </div>
       </div>

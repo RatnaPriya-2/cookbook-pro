@@ -1,9 +1,15 @@
 import React from "react";
 
 const WatchVideo = ({ videoUrl, setVideoUrl, isOpen ,setIsOpen}) => {
-  if (!videoUrl) return null;
-  let videoId = videoUrl.split("v=")[1].split("&")[0];
-  //& removes any extra parameters after the videoId
+  const getYouTubeId = (url) => {
+    if (!url) return null;
+    const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11}).*/);
+    return match ? match[1] : null;
+  };
+
+  const videoId = getYouTubeId(videoUrl);
+
+  if (!videoId) return null;
   return (
     <>
       <div className={`video-main-body ${isOpen ? "open" : ""}`}>
