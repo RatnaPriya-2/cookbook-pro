@@ -6,43 +6,64 @@ const Recipes = () => {
   const [favoriteToLs, setFavoriteToLs] = useState(
     JSON.parse(localStorage.getItem("favoriteToLs")) || []
   );
-  const [allMeals, setAllMeals] = useState([]);
-  const [basicMeals, setBasicMeals] = useState([]);
-
+  const [displayedMeals, setDisplayedMeals] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const getInitialData = async () => {
+    const fetchMeals = async () => {
+      setIsLoading(true);
+      setError("");
       try {
-        let url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${inputQuery}`;
-        let response = await fetch(url);
-        let data = await response.json();
-        setBasicMeals(data.meals);
-      } catch (error) {
-        setError(error.message);
+        if (!inputQuery.trim()) {
+          const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=`;
+          const response = await fetch(url);
+          const data = await response.json();
+          setDisplayedMeals(data.meals || []);
+        } else {
+          const query = inputQuery.trim();
+          const urls = [
+            `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`,
+            `https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`,
+            `https://www.themealdb.com/api/json/v1/1/filter.php?a=${query}`
+          ];
+
+          // Fetch name, ingredient, and cuisine simultaneously
+          const responses = await Promise.allSettled(
+            urls.map((url) => fetch(url).then((res) => res.json()))
+          );
+
+          let combinedMeals = [];
+          responses.forEach((res) => {
+            if (res.status === "fulfilled" && res.value.meals) {
+              combinedMeals = [...combinedMeals, ...res.value.meals];
+            }
+          });
+
+          // Remove potential duplicate meals using the idMeal as the unique key
+          const uniqueMealsMap = new Map();
+          combinedMeals.forEach((meal) => {
+            if (!uniqueMealsMap.has(meal.idMeal)) {
+              uniqueMealsMap.set(meal.idMeal, meal);
+            }
+          });
+
+          setDisplayedMeals(Array.from(uniqueMealsMap.values()));
+        }
+      } catch (err) {
+        setError("Failed to fetch recipes. Please try again later.");
+      } finally {
+        setIsLoading(false);
       }
     };
-    getInitialData();
-    // eslint-disable-next-line
-  }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let str = "abcdefghijklmnopqrstuvwxyz";
-      let dataList = await Promise.all(
-        str.split("").map(async (char) => {
-          let url = `https://www.themealdb.com/api/json/v1/1/search.php?f=${char}`;
-          let response = await fetch(url);
-          let data = await response.json();
-          let mealList = data.meals;
-          return mealList || [];
-        })
-      );
-      let finalData = dataList.flat(); //dataList is nested array
-      setAllMeals(finalData);
-    };
-    fetchData();
-  }, []);
+    // Debounce to wait 500ms before making the API requests
+    const debounceTimer = setTimeout(() => {
+      fetchMeals();
+    }, 10000);
+
+    return () => clearTimeout(debounceTimer);
+  }, [inputQuery]);
 
   const handleFavoriteToggle = (recipe) => {
     setFavoriteToLs((prev) => {
@@ -60,17 +81,6 @@ const Recipes = () => {
 
   const isFavorite = (recipe) =>
     favoriteToLs.some((fav) => fav.idMeal === recipe.idMeal);
-
-  let filteredMealsByName =
-    allMeals.filter((meal) =>
-      meal.strMeal.toLowerCase().includes(inputQuery.trim().toLowerCase())
-    ) || [];
-  let filteredMealsByCuisine =
-    allMeals.filter((meal) =>
-      meal.strArea.toLowerCase().includes(inputQuery.trim().toLowerCase())
-    ) || [];
-
-  console.log(error);
 
   return (
     <>
@@ -90,11 +100,7 @@ const Recipes = () => {
         <div className="recipe-container">
           {error ? (
             <p>{error}</p>
-          ) : inputQuery !== "" &&
-            filteredMealsByCuisine.length === 0 &&
-            filteredMealsByName.length === 0 ? (
-            <p>No recipes found ...</p>
-          ) : basicMeals.length === 0 ? (
+          ) : isLoading ? (
             <div
               style={{
                 fontSize: "22px",
@@ -104,13 +110,10 @@ const Recipes = () => {
             >
               Loading...
             </div>
+          ) : displayedMeals.length === 0 ? (
+            <p>No recipes found ...</p>
           ) : (
-            (inputQuery === ""
-              ? basicMeals
-              : filteredMealsByCuisine.length > 0
-              ? filteredMealsByCuisine
-              : filteredMealsByName
-            )?.map((recipe) => (
+            displayedMeals.map((recipe) => (
               <RecipeCard
                 key={recipe.idMeal}
                 newRecipe={recipe}

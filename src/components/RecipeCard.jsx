@@ -9,7 +9,7 @@ const RecipeCard = ({ newRecipe, isFavorite, onToggleFavorite }) => {
   const navigate = useNavigate();
 
   const handleRecipeDetails = () => {
-    navigate("/recipe-details", { state: newRecipe });
+    navigate(`/recipe-details/${newRecipe.idMeal}`, { state: newRecipe });
   };
 
   const handleWatchRecipe = () => {

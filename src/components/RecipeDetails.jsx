@@ -1,20 +1,58 @@
-import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const RecipeDetails = () => {
+  const { id } = useParams();
   const location = useLocation();
-  const newRecipe = location.state || [];
   const navigate = useNavigate();
+
+  const [newRecipe, setNewRecipe] = useState(location.state || null);
+  const [isLoading, setIsLoading] = useState(!newRecipe);
+
+  useEffect(() => {
+    if (!newRecipe) {
+      const fetchRecipe = async () => {
+        try {
+          const res = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`);
+          const data = await res.json();
+          if (data.meals) setNewRecipe(data.meals[0]);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchRecipe();
+    }
+  }, [id, newRecipe]);
+
+  if (isLoading) {
+    return <div style={{ fontSize: "22px", fontWeight: "600", textAlign: "center", marginTop: "50px" }}>Loading...</div>;
+  }
+
+  if (!newRecipe) {
+    return <div style={{ fontSize: "22px", fontWeight: "600", textAlign: "center", marginTop: "50px" }}>Recipe not found.</div>;
+  }
+
+  console.log(newRecipe)
 
   let finalIngredients = Object.keys(newRecipe)
     .filter((x) => x.includes("strIngredient") && newRecipe[x]?.trim())
-    .map((x) => newRecipe[x]);
+    .map((x) => {
+      let number = x.replace("strIngredient", "");
+      return {
+        id: number,
+        ingredient: newRecipe[x],
+        measurement: newRecipe[`strMeasure${number}`] || ""
+      }
 
-  let finalMeasurements = Object.keys(newRecipe)
-    .filter((x) => x.includes("strMeasure") && newRecipe[x]?.trim())
-    .map((x) => newRecipe[x]);
 
-  console.log(newRecipe.strInstructions);
+    });
+
+
+
+
+
 
   return (
     <div className="recipe-details-container">
@@ -30,9 +68,9 @@ const RecipeDetails = () => {
       <div className="ingredients">
         <p className="section-title">Ingredients</p>
         <ul className="ingredients-list">
-          {finalIngredients.map((ingredient, index) => (
-            <li key={index}>
-              {ingredient} - {finalMeasurements[index]}
+          {finalIngredients.map((item) => (
+            <li key={item.id}>
+              {item.ingredient} - {item.measurement}
             </li>
           ))}
         </ul>
@@ -41,8 +79,8 @@ const RecipeDetails = () => {
       <div className="instructions">
         <p className="section-title">Instructions</p>
         <ol className="instructions-list">
-          {newRecipe.strInstructions.split(/\.\s+/).map((sentence, index) => (
-            <li key={index}>{sentence+"."}</li>
+          {newRecipe.strInstructions?.split(/\.\s+/).filter(Boolean).map((sentence, index) => (
+            <li key={index}>{sentence.trim() + "."}</li>
           ))}
         </ol>
       </div>
