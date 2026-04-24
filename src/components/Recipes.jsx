@@ -24,10 +24,8 @@ const Recipes = () => {
 
   // 🔥 Debounced search
   useEffect(() => {
-    if (!inputQuery.trim()) return;
-
     const timer = setTimeout(() => {
-      fetchMeals(inputQuery);
+      fetchMeals(inputQuery.trim());
     }, 500);
 
     return () => clearTimeout(timer);
@@ -42,15 +40,9 @@ const Recipes = () => {
       .sort()
     : categories;
 
-  const currentActive = isSearching ? activeCuisine : activeCategory;
 
-  const handleChipClick = (chip) => {
-    if (isSearching) {
-      setActiveCuisine(activeCuisine === chip ? "" : chip);
-    } else {
-      setActiveCategory(activeCategory === chip ? "All" : chip);
-    }
-  };
+
+
 
   // 🔥 Search input handler
   const handleSearchChange = (e) => {

@@ -95,6 +95,7 @@
 }
 
 .watch-btn-primary {
+  font-size: 0.95rem;
   background: var(--accent-pink);
   text-decoration: none;
   display: inline-block;
@@ -111,11 +112,30 @@
 
 }
 
+
 .watch-btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 6px -1px var(--accent-hover);
   background-color: var(--accent-hover);
 }
+
+.video-fallback-btn {
+  background: linear-gradient(135deg, #ff4d4d, #ff0000);
+  top: auto;
+  bottom: 0.7rem;
+  right: 1.5rem;
+  padding: 1rem 2.2rem;
+  z-index: 1000;
+
+}
+
+.video-fallback-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px #ff0000;
+  background-color: #ff0000;
+}
+
+
 
 /* --- Hero Section --- */
 .main-body {
