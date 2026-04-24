@@ -94,6 +94,29 @@
   background-color: #0d6d65;
 }
 
+.watch-btn-primary {
+  background: var(--accent-pink);
+  text-decoration: none;
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  border-radius: 9999px;
+  color: white;
+  font-weight: 600;
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+
+}
+
+.watch-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px var(--accent-hover);
+  background-color: var(--accent-hover);
+}
+
 /* --- Hero Section --- */
 .main-body {
   position: relative;

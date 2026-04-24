@@ -40,9 +40,11 @@ const RecipeCard = ({ newRecipe, isFavorite, onToggleFavorite }) => {
                 ></i>
               </div>
             </div>
-            <p className="cuisine">
-              <span>Cuisine</span>: {newRecipe.strArea}
-            </p>
+            {newRecipe.strArea && (
+              <p className="cuisine">
+                <span>Cuisine</span>: {newRecipe.strArea}
+              </p>
+            )}
           </div>
           <div className="btn-cluster ">
             <button className="get-recipe" onClick={handleRecipeDetails}>

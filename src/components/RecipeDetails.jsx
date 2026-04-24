@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import WatchVideo from "./WatchVideo";
 
 const RecipeDetails = () => {
   const { id } = useParams();
@@ -8,9 +9,11 @@ const RecipeDetails = () => {
 
   const [newRecipe, setNewRecipe] = useState(location.state || null);
   const [isLoading, setIsLoading] = useState(!newRecipe);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (!newRecipe) {
+    if (!newRecipe || !newRecipe.strInstructions) {
       const fetchRecipe = async () => {
         try {
           const res = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`);
@@ -34,7 +37,7 @@ const RecipeDetails = () => {
     return <div style={{ fontSize: "22px", fontWeight: "600", textAlign: "center", marginTop: "50px" }}>Recipe not found.</div>;
   }
 
-  console.log(newRecipe)
+
 
   let finalIngredients = Object.keys(newRecipe)
     .filter((x) => x.includes("strIngredient") && newRecipe[x]?.trim())
@@ -42,16 +45,33 @@ const RecipeDetails = () => {
       ingredient: newRecipe[x],
       measurement: newRecipe[`strMeasure${x.replace("strIngredient", "")}`] || ""
     }));
+  const handleWatchRecipe = () => {
+    setVideoUrl(newRecipe.strYoutube);
+    setIsOpen(!isOpen);
+  };
 
   return (
+
     <div className="recipe-details-container">
+      <WatchVideo
+        videoUrl={videoUrl}
+        setVideoUrl={setVideoUrl}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
       <button className="back-btn" onClick={() => navigate(-1)}>
         <i className="fa-solid fa-arrow-left-long"></i> Back
       </button>
       <p className="recipe-details-title">{newRecipe.strMeal}</p>
 
-      <div className="recipe-details-image">
+      <div className="recipe-details-image" style={{ position: "relative" }}>
         <img src={newRecipe.strMealThumb} alt={newRecipe.strMeal} />
+
+        {newRecipe.strYoutube && (
+          <button onClick={handleWatchRecipe} className="watch-btn-primary" >
+            Watch Recipe
+          </button>
+        )}
       </div>
 
       <div className="ingredients">
@@ -73,7 +93,7 @@ const RecipeDetails = () => {
           ))}
         </ol>
       </div>
-    </div>
+    </div >
   );
 };
 
