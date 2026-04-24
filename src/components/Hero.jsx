@@ -14,8 +14,8 @@ const Hero = () => {
             </span>
           </p>
 
-          <Link to="/recipes">
-            <span>Browse Recipes</span>
+          <Link to="/recipes" className="btn-primary">
+            Browse Recipes
           </Link>
         </div>
       </div>

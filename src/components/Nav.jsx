@@ -16,6 +16,9 @@ const Nav = () => {
           <Link to="/recipes">
             <span>Recipes</span>
           </Link>
+          <Link to="/tips">
+            <span>Chef Tips</span>
+          </Link>
           <Link to="/favorites">
             <span>Favorites</span>
           </Link>

@@ -38,21 +38,10 @@ const RecipeDetails = () => {
 
   let finalIngredients = Object.keys(newRecipe)
     .filter((x) => x.includes("strIngredient") && newRecipe[x]?.trim())
-    .map((x) => {
-      let number = x.replace("strIngredient", "");
-      return {
-        id: number,
-        ingredient: newRecipe[x],
-        measurement: newRecipe[`strMeasure${number}`] || ""
-      }
-
-
-    });
-
-
-
-
-
+    .map((x) => ({
+      ingredient: newRecipe[x],
+      measurement: newRecipe[`strMeasure${x.replace("strIngredient", "")}`] || ""
+    }));
 
   return (
     <div className="recipe-details-container">
@@ -68,8 +57,8 @@ const RecipeDetails = () => {
       <div className="ingredients">
         <p className="section-title">Ingredients</p>
         <ul className="ingredients-list">
-          {finalIngredients.map((item) => (
-            <li key={item.id}>
+          {finalIngredients.map((item, index) => (
+            <li key={index}>
               {item.ingredient} - {item.measurement}
             </li>
           ))}
@@ -80,7 +69,7 @@ const RecipeDetails = () => {
         <p className="section-title">Instructions</p>
         <ol className="instructions-list">
           {newRecipe.strInstructions?.split(/\.\s+/).filter(Boolean).map((sentence, index) => (
-            <li key={index}>{sentence.trim() + "."}</li>
+            <li key={index}>{sentence.trim()}</li>
           ))}
         </ol>
       </div>

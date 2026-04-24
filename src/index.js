@@ -10,6 +10,8 @@ import Hero from "./components/Hero";
 import Recipes from "./components/Recipes";
 import Favorites from "./components/Favorites";
 import RecipeDetails from "./components/RecipeDetails";
+import ChefTips from "./components/ChefTips";
+import { AppProvider } from "./context/context";
 
 const router = createBrowserRouter(
   [
@@ -37,6 +39,10 @@ const router = createBrowserRouter(
           path: "/recipe-details/:id", // recipe-details Page
           element: <RecipeDetails />,
         },
+        {
+          path: "/tips", // Chef Tips Page
+          element: <ChefTips />,
+        },
       ],
     },
   ],
@@ -50,7 +56,9 @@ const router = createBrowserRouter(
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AppProvider>
+      <RouterProvider router={router} />
+    </AppProvider>
   </React.StrictMode>
 );
 
