@@ -40,6 +40,7 @@ const AppProvider = ({ children }) => {
         const cleanQuery = query.trim();
         setIsLoading(true);
         setError("");
+        setDisplayedMeals([]); // immediately clear stale cards to prevent flash
 
         try {
             let meals = [];

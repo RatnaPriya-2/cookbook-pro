@@ -23,33 +23,45 @@ const WatchVideo = ({ videoUrl, setVideoUrl, isOpen, setIsOpen }) => {
   }, [isOpen, setIsOpen, setVideoUrl]);
 
   if (!videoId) return null;
+
+  const closeModal = () => {
+    setIsOpen(false);
+    setVideoUrl("");
+  };
+
   return (
     <>
+      {/* Backdrop */}
+      {isOpen && <div className="video-backdrop" onClick={closeModal} />}
+
       <div className={`video-main-body ${isOpen ? "open" : ""}`}>
-        <button
-          aria-label="Close video"
-          className="close-btn"
-          onClick={() => {
-            setIsOpen(!isOpen);
-            setVideoUrl("");
-          }}
-        >
-          ✖
-        </button>
+        {/* Header bar */}
+        <div className="video-header">
+          <span className="video-header-title">▶ Now Playing</span>
+          <button aria-label="Close video" className="close-btn" onClick={closeModal}>
+            ✖
+          </button>
+        </div>
+
+        {/* iframe fills the middle */}
         <iframe
           title="Watch-recipe"
           src={`https://www.youtube.com/embed/${videoId}`}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         ></iframe>
-        <a
-          href={`https://www.youtube.com/watch?v=${videoId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="watch-btn-primary video-fallback-btn"
-        >
-          ▶ Watch on YouTube
-        </a>
+
+        {/* Footer bar — outside the iframe, no overlap */}
+        <div className="video-footer">
+          <a
+            href={`https://www.youtube.com/watch?v=${videoId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="video-yt-link"
+          >
+            <i className="fa-brands fa-youtube"></i> Open on YouTube
+          </a>
+        </div>
       </div>
     </>
   );
