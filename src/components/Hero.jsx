@@ -19,6 +19,9 @@ const Hero = () => {
           </Link>
         </div>
       </div>
+
+      {/* Mirror bar — same height & style as navbar, purely decorative */}
+      <div className="hero-footer-bar" />
     </>
   );
 };
