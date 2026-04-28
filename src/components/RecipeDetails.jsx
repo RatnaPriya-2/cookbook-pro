@@ -7,8 +7,9 @@ const RecipeDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const hasFullData = location.state?.strInstructions;
   const [newRecipe, setNewRecipe] = useState(location.state || null);
-  const [isLoading, setIsLoading] = useState(!newRecipe);
+  const [isLoading, setIsLoading] = useState(!hasFullData);
   const [videoUrl, setVideoUrl] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
@@ -30,11 +31,15 @@ const RecipeDetails = () => {
   }, [id, newRecipe]);
 
   if (isLoading) {
-    return <div style={{ fontSize: "22px", fontWeight: "600", textAlign: "center", marginTop: "50px" }}>Loading...</div>;
+    return <div className="loading" />;
   }
 
   if (!newRecipe) {
-    return <div style={{ fontSize: "22px", fontWeight: "600", textAlign: "center", marginTop: "50px" }}>Recipe not found.</div>;
+    return (
+      <div className="loading" style={{ "--loading-text": "'Recipe not found.'" }}>
+        <p style={{ marginTop: "4rem", fontSize: "1.25rem", fontWeight: "600", color: "var(--text-muted)" }}>Recipe not found.</p>
+      </div>
+    );
   }
 
 
@@ -77,8 +82,8 @@ const RecipeDetails = () => {
       <div className="ingredients">
         <p className="section-title">Ingredients</p>
         <ul className="ingredients-list">
-          {finalIngredients.map((item, index) => (
-            <li key={index}>
+          {finalIngredients.map((item) => (
+            <li key={item.ingredient}>
               {item.ingredient} - {item.measurement}
             </li>
           ))}

@@ -1,6 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import RecipeCard from "./RecipeCard";
 import { useGlobalContext } from "../context/context";
+
+// 🔥 Moved outside component to prevent remount on every render
+const SkeletonCard = () => (
+  <div className="card-body skeleton-card">
+    <div className="card-img skeleton-pulse"></div>
+    <div className="card-content">
+      <div className="skeleton-line skeleton-pulse" style={{ width: "70%" }}></div>
+      <div className="skeleton-line skeleton-pulse" style={{ width: "40%", marginTop: "1rem" }}></div>
+      <div className="btn-cluster" style={{ marginTop: "2rem" }}>
+        <div className="skeleton-btn skeleton-pulse"></div>
+        <div className="skeleton-btn skeleton-pulse"></div>
+      </div>
+    </div>
+  </div>
+);
 
 const Recipes = () => {
   const {
@@ -16,20 +31,20 @@ const Recipes = () => {
     activeCuisine,
     setActiveCuisine,
     allFetchedMeals,
+    favorites,
+    toggleFavorite,
+    isFavorite,
   } = useGlobalContext();
 
-  const [favoriteToLs, setFavoriteToLs] = useState(
-    JSON.parse(localStorage.getItem("favoriteToLs")) || []
-  );
-
-  // 🔥 Debounced search
+  // 🔥 Debounced search — only fires when user is actively searching
   useEffect(() => {
+    if (!inputQuery.trim()) return; // context handles empty/browse state
     const timer = setTimeout(() => {
       fetchMeals(inputQuery.trim());
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [inputQuery]);
+  }, [inputQuery, fetchMeals]);
 
   // 🔥 Dynamic Chips
   const isSearching = inputQuery.trim().length > 0;
@@ -39,10 +54,6 @@ const Recipes = () => {
       .filter(Boolean)
       .sort()
     : categories;
-
-
-
-
 
   // 🔥 Search input handler
   const handleSearchChange = (e) => {
@@ -55,38 +66,6 @@ const Recipes = () => {
       setActiveCuisine(""); // reset cuisine when clearing
     }
   };
-
-  // 🔥 Favorites
-  const handleFavoriteToggle = (recipe) => {
-    setFavoriteToLs((prev) => {
-      const isFav = prev.some((f) => f.idMeal === recipe.idMeal);
-
-      const updated = isFav
-        ? prev.filter((f) => f.idMeal !== recipe.idMeal)
-        : [...prev, recipe];
-
-      localStorage.setItem("favoriteToLs", JSON.stringify(updated));
-      return updated;
-    });
-  };
-
-  const isFavorite = (recipe) =>
-    favoriteToLs.some((f) => f.idMeal === recipe.idMeal);
-
-  // 🔥 Skeleton Loader
-  const SkeletonCard = () => (
-    <div className="card-body skeleton-card">
-      <div className="card-img skeleton-pulse"></div>
-      <div className="card-content">
-        <div className="skeleton-line skeleton-pulse" style={{ width: "70%" }}></div>
-        <div className="skeleton-line skeleton-pulse" style={{ width: "40%", marginTop: "1rem" }}></div>
-        <div className="btn-cluster" style={{ marginTop: "2rem" }}>
-          <div className="skeleton-btn skeleton-pulse"></div>
-          <div className="skeleton-btn skeleton-pulse"></div>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <section className="recipes-main-body">
@@ -111,12 +90,11 @@ const Recipes = () => {
         {/* 🔥 FILTER CHIPS */}
         <div className="category-container">
           <div
-            className={`category-chip ${isSearching
-              ? activeCuisine === ""
-              : activeCategory === "All"
-                ? "active"
-                : ""
-              }`}
+            className={`category-chip ${
+              isSearching
+                ? activeCuisine === "" ? "active" : ""
+                : activeCategory === "All" ? "active" : ""
+            }`}
             onClick={() =>
               isSearching
                 ? setActiveCuisine("")
@@ -129,12 +107,11 @@ const Recipes = () => {
           {dynamicChips.map((chip) => (
             <div
               key={chip}
-              className={`category-chip ${isSearching
-                ? activeCuisine === chip
-                : activeCategory === chip
-                  ? "active"
-                  : ""
-                }`}
+              className={`category-chip ${
+                isSearching
+                  ? activeCuisine === chip ? "active" : ""
+                  : activeCategory === chip ? "active" : ""
+              }`}
               onClick={() =>
                 isSearching
                   ? setActiveCuisine(chip)
@@ -163,7 +140,7 @@ const Recipes = () => {
               key={recipe.idMeal}
               newRecipe={recipe}
               isFavorite={isFavorite(recipe)}
-              onToggleFavorite={() => handleFavoriteToggle(recipe)}
+              onToggleFavorite={() => toggleFavorite(recipe)}
             />
           ))
         )}

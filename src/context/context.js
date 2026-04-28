@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 const AppContext = createContext();
 
@@ -14,8 +14,29 @@ const AppProvider = ({ children }) => {
     const [activeCategory, setActiveCategory] = useState("All");
     const [activeCuisine, setActiveCuisine] = useState("");
 
-    // 🔥 MAIN FETCH FUNCTION
-    const fetchMeals = async (query = "") => {
+    // 🔥 FAVORITES — single source of truth
+    const [favorites, setFavorites] = useState(
+        () => JSON.parse(localStorage.getItem("favoriteToLs")) || []
+    );
+
+    const toggleFavorite = useCallback((recipe) => {
+        setFavorites((prev) => {
+            const isFav = prev.some((f) => f.idMeal === recipe.idMeal);
+            const updated = isFav
+                ? prev.filter((f) => f.idMeal !== recipe.idMeal)
+                : [...prev, recipe];
+            localStorage.setItem("favoriteToLs", JSON.stringify(updated));
+            return updated;
+        });
+    }, []);
+
+    const isFavorite = useCallback(
+        (recipe) => favorites.some((f) => f.idMeal === recipe.idMeal),
+        [favorites]
+    );
+
+    // 🔥 MAIN FETCH FUNCTION — memoized to avoid stale closures
+    const fetchMeals = useCallback(async (query = "") => {
         const cleanQuery = query.trim();
         setIsLoading(true);
         setError("");
@@ -37,24 +58,6 @@ const AppProvider = ({ children }) => {
                     );
                     const data = await res.json();
                     meals = data.meals || [];
-
-                    // fetch full details (optional but you chose this approach)
-                    // const results = await Promise.allSettled(
-                    //     baseMeals.map(async (recipe) => {
-                    //         const res = await fetch(
-                    //             `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${recipe.idMeal}`
-                    //         );
-                    //         const data = await res.json();
-                    //         return data.meals[0];
-                    //     })
-                    // );
-
-                    // meals = results
-                    //     .filter(r => r.status === "fulfilled")
-                    //     .map(r => r.value);
-
-
-
                 }
             }
 
@@ -71,7 +74,6 @@ const AppProvider = ({ children }) => {
                 );
 
                 let combined = [];
-
                 responses.forEach((res) => {
                     if (res.status === "fulfilled" && res.value.meals) {
                         combined.push(...res.value.meals);
@@ -90,29 +92,30 @@ const AppProvider = ({ children }) => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [activeCategory]); // activeCategory is a real dependency here
 
-    // 🔥 FILTER LOGIC
+    // 🔥 FILTER LOGIC — fixed: cuisine filter works independently of search
     useEffect(() => {
         let filtered = allFetchedMeals;
 
-        if (inputQuery.trim() && activeCuisine) {
+        if (activeCuisine) {
             filtered = allFetchedMeals.filter(
                 (meal) => meal.strArea === activeCuisine
             );
         }
 
         setDisplayedMeals(filtered);
-    }, [allFetchedMeals, activeCuisine, inputQuery]);
+    }, [allFetchedMeals, activeCuisine]);
 
-    // 🔥 CATEGORY CHANGE → FETCH
+    // 🔥 CATEGORY CHANGE → FETCH — fixed: correct deps
     useEffect(() => {
         if (!inputQuery.trim()) {
             fetchMeals("");
         }
-    }, [activeCategory]);
+    }, [activeCategory, fetchMeals, inputQuery]);
 
-    // 🔥 INITIAL LOAD
+    // 🔥 INITIAL LOAD — only fetches category list
+    // (The category-change effect below handles the initial meal fetch)
     useEffect(() => {
         const init = async () => {
             try {
@@ -127,12 +130,11 @@ const AppProvider = ({ children }) => {
             } catch {
                 console.error("Failed to load categories");
             }
-
-            fetchMeals("");
         };
 
         init();
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // intentionally run only on mount
 
     return (
         <AppContext.Provider
@@ -152,6 +154,11 @@ const AppProvider = ({ children }) => {
                 setActiveCuisine,
 
                 allFetchedMeals,
+
+                // favorites
+                favorites,
+                toggleFavorite,
+                isFavorite,
             }}
         >
             {children}

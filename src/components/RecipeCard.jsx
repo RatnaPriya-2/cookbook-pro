@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import WatchVideo from "./WatchVideo";
 import { useNavigate } from "react-router-dom";
 
+// Preload the RecipeDetails chunk when user hovers a card
+const prefetchRecipeDetails = () => import("./RecipeDetails");
+
 const RecipeCard = ({ newRecipe, isFavorite, onToggleFavorite }) => {
   const [videoUrl, setVideoUrl] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +28,7 @@ const RecipeCard = ({ newRecipe, isFavorite, onToggleFavorite }) => {
         isOpen={isOpen}
         setIsOpen={setIsOpen}
       />
-      <div className="card-body">
+      <div className="card-body" onMouseEnter={prefetchRecipeDetails}>
         <div className="card-img">
           <img src={newRecipe.strMealThumb} alt={newRecipe.strMeal} />
         </div>

@@ -6,11 +6,13 @@ const About = () => {
       <div className="about-main-body">
         <section className="introduction">
           <h3>Welcome to CookBook Pro!</h3>
-          At CookBook Pro, we believe that cooking should be fun, easy, and
-          accessible to everyone. Whether you're a seasoned chef or a beginner
-          in the kitchen, our app is here to help you discover delicious recipes
-          tailored to your tastes and dietary preferences. From quick weekday
-          meals to gourmet dishes, we’ve got you covered!
+          <p>
+            At CookBook Pro, we believe that cooking should be fun, easy, and
+            accessible to everyone. Whether you're a seasoned chef or a beginner
+            in the kitchen, our app is here to help you discover delicious recipes
+            tailored to your tastes and dietary preferences. From quick weekday
+            meals to gourmet dishes, we’ve got you covered!
+          </p>
         </section>
         <section className="mission">
           <h3>Our Mission</h3>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const WatchVideo = ({ videoUrl, setVideoUrl, isOpen, setIsOpen }) => {
   const getYouTubeId = (url) => {
@@ -9,17 +9,35 @@ const WatchVideo = ({ videoUrl, setVideoUrl, isOpen, setIsOpen }) => {
 
   const videoId = getYouTubeId(videoUrl);
 
+  // Close modal on Escape key press
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+        setVideoUrl("");
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, setIsOpen, setVideoUrl]);
+
   if (!videoId) return null;
   return (
     <>
       <div className={`video-main-body ${isOpen ? "open" : ""}`}>
-        <button className="close-btn" onClick={() => {
-          setIsOpen(!isOpen)
-          setVideoUrl("")
-        }}>
+        <button
+          aria-label="Close video"
+          className="close-btn"
+          onClick={() => {
+            setIsOpen(!isOpen);
+            setVideoUrl("");
+          }}
+        >
           ✖
         </button>
-        <iframe title="Watch-recipe"
+        <iframe
+          title="Watch-recipe"
           src={`https://www.youtube.com/embed/${videoId}`}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
@@ -32,7 +50,6 @@ const WatchVideo = ({ videoUrl, setVideoUrl, isOpen, setIsOpen }) => {
         >
           ▶ Watch on YouTube
         </a>
-
       </div>
     </>
   );

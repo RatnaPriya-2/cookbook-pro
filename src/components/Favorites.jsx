@@ -1,19 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import RecipeCard from "./RecipeCard";
+import { useGlobalContext } from "../context/context";
 
 const Favorites = () => {
-  const [favoriteRecipes, setFavoriteRecipes] = useState(
-    JSON.parse(localStorage.getItem("favoriteToLs")) || []
-  );
-  useEffect(() => {
-    localStorage.setItem("favoriteToLs", JSON.stringify(favoriteRecipes));
-  }, [favoriteRecipes]);
-
-  const handleFavoriteToggle = (recipe) => {
-    setFavoriteRecipes((prevFavorites) =>
-      prevFavorites.filter((fav) => fav.idMeal !== recipe.idMeal)
-    );
-  };
+  const navigate = useNavigate();
+  const { favorites, toggleFavorite, isFavorite } = useGlobalContext();
 
   return (
     <div className="recipes-main-body">
@@ -23,20 +15,20 @@ const Favorites = () => {
       </div>
 
       <div className="recipe-container">
-        {favoriteRecipes.length > 0 ? (
-          favoriteRecipes.map((recipe) => (
+        {favorites.length > 0 ? (
+          favorites.map((recipe) => (
             <RecipeCard
               key={recipe.idMeal}
               newRecipe={recipe}
-              isFavorite={true}
-              onToggleFavorite={() => handleFavoriteToggle(recipe)}
+              isFavorite={isFavorite(recipe)}
+              onToggleFavorite={() => toggleFavorite(recipe)}
             />
           ))
         ) : (
           <div className="empty-state">
             <i className="fa-regular fa-heart"></i>
             <p>No favorite recipes found yet.</p>
-            <button className="btn-primary" onClick={() => (window.location.href = "/recipes")}>
+            <button className="btn-primary" onClick={() => navigate("/recipes")}>
               Browse Recipes
             </button>
           </div>

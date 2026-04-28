@@ -1,17 +1,19 @@
-import React from "react";
+import React, { lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
 import App from "./App";
-import About from "./components/About";
-import Hero from "./components/Hero";
-import Recipes from "./components/Recipes";
-import Favorites from "./components/Favorites";
-import RecipeDetails from "./components/RecipeDetails";
-import ChefTips from "./components/ChefTips";
+
 import { AppProvider } from "./context/context";
+
+const About = lazy(() => import("./components/About"))
+const Recipes = lazy(() => import("./components/Recipes"))
+const Favorites = lazy(() => import("./components/Favorites"))
+const RecipeDetails = lazy(() => import("./components/RecipeDetails"))
+const ChefTips = lazy(() => import("./components/ChefTips"))
+const Hero = lazy(() => import("./components/Hero"))
 
 const router = createBrowserRouter(
   [
@@ -20,7 +22,7 @@ const router = createBrowserRouter(
       element: <App />, // Use App as the wrapper
       children: [
         {
-          path: "/", // Home Page
+          index: true, // Home Page
           element: <Hero />,
         },
         {

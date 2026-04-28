@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Nav = () => {
   return (
@@ -7,21 +7,21 @@ const Nav = () => {
       <div className="nav-bar flex">
         <p className="title">CookBook Pro</p>
         <div className="nav-cluster">
-          <Link to="/">
+          <NavLink to="/">
             <span>Home</span>
-          </Link>
-          <Link to="/about">
+          </NavLink>
+          <NavLink to="/about">
             <span>About</span>
-          </Link>
-          <Link to="/recipes">
+          </NavLink>
+          <NavLink to="/recipes">
             <span>Recipes</span>
-          </Link>
-          <Link to="/tips">
+          </NavLink>
+          <NavLink to="/tips">
             <span>Chef Tips</span>
-          </Link>
-          <Link to="/favorites">
+          </NavLink>
+          <NavLink to="/favorites">
             <span>Favorites</span>
-          </Link>
+          </NavLink>
         </div>
       </div>
     </>
