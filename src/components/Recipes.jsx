@@ -31,7 +31,6 @@ const Recipes = () => {
     activeCuisine,
     setActiveCuisine,
     allFetchedMeals,
-    favorites,
     toggleFavorite,
     isFavorite,
   } = useGlobalContext();
