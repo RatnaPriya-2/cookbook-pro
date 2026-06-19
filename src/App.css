@@ -518,7 +518,26 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: var(--transition);
+  transition: transform 0.3s ease, opacity 0.4s ease;
+}
+
+/* Image skeleton shimmer — shown while image loads */
+.card-img {
+  position: relative;
+}
+
+.img-skeleton {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+}
+
+.card-img img.img-loading {
+  opacity: 0;
+}
+
+.card-img img.img-loaded {
+  opacity: 1;
 }
 
 .card-body:hover .card-img img {
@@ -638,12 +657,14 @@
   box-shadow: var(--premium-shadow);
   margin-bottom: 3rem;
   height: 500px;
+  position: relative;
 }
 
 .recipe-details-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: opacity 0.4s ease;
 }
 
 .section-title {

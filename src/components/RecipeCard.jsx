@@ -8,6 +8,7 @@ const prefetchRecipeDetails = () => import("./RecipeDetails");
 const RecipeCard = ({ newRecipe, isFavorite, onToggleFavorite }) => {
   const [videoUrl, setVideoUrl] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const navigate = useNavigate();
 
@@ -30,7 +31,13 @@ const RecipeCard = ({ newRecipe, isFavorite, onToggleFavorite }) => {
       />
       <div className="card-body" onMouseEnter={prefetchRecipeDetails}>
         <div className="card-img">
-          <img src={newRecipe.strMealThumb} alt={newRecipe.strMeal} />
+          {!imageLoaded && <div className="img-skeleton skeleton-pulse" />}
+          <img
+            src={newRecipe.strMealThumb}
+            alt={newRecipe.strMeal}
+            className={imageLoaded ? "img-loaded" : "img-loading"}
+            onLoad={() => setImageLoaded(true)}
+          />
         </div>
         <div className="card-content">
           <div className="content-block">

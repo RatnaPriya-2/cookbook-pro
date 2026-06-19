@@ -12,6 +12,7 @@ const RecipeDetails = () => {
   const [isLoading, setIsLoading] = useState(!hasFullData);
   const [videoUrl, setVideoUrl] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     if (!newRecipe || !newRecipe.strInstructions) {
@@ -70,7 +71,13 @@ const RecipeDetails = () => {
       <p className="recipe-details-title">{newRecipe.strMeal}</p>
 
       <div className="recipe-details-image" style={{ position: "relative" }}>
-        <img src={newRecipe.strMealThumb} alt={newRecipe.strMeal} />
+        {!imageLoaded && <div className="img-skeleton skeleton-pulse" style={{ borderRadius: '32px' }} />}
+        <img
+          src={newRecipe.strMealThumb}
+          alt={newRecipe.strMeal}
+          className={imageLoaded ? "img-loaded" : "img-loading"}
+          onLoad={() => setImageLoaded(true)}
+        />
 
         {newRecipe.strYoutube && (
           <button onClick={handleWatchRecipe} className="watch-btn-primary" >
