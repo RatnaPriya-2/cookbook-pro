@@ -35,6 +35,36 @@ const AppProvider = ({ children }) => {
         [favorites]
     );
 
+    // 🔥 Hydrate partial meals — filter.php only returns idMeal, strMeal, strMealThumb.
+    // This fetches full details (strArea, strInstructions, etc.) for any partial result.
+    const hydrateMeals = useCallback(async (meals) => {
+        const partial = meals.filter((m) => !m.strArea);
+        if (partial.length === 0) return meals;
+
+        const fullMap = new Map(
+            meals.filter((m) => m.strArea).map((m) => [m.idMeal, m])
+        );
+
+        const lookups = await Promise.allSettled(
+            partial.map((m) =>
+                fetch(
+                    `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${m.idMeal}`
+                )
+                    .then((res) => res.json())
+                    .then((data) => (data.meals ? data.meals[0] : m))
+            )
+        );
+
+        lookups.forEach((result) => {
+            if (result.status === "fulfilled") {
+                fullMap.set(result.value.idMeal, result.value);
+            }
+        });
+
+        // Preserve original order
+        return meals.map((m) => fullMap.get(m.idMeal) || m);
+    }, []);
+
     // 🔥 MAIN FETCH FUNCTION — memoized to avoid stale closures
     const fetchMeals = useCallback(async (query = "") => {
         const cleanQuery = query.trim();
@@ -87,13 +117,16 @@ const AppProvider = ({ children }) => {
                 );
             }
 
+            // Hydrate partial meals so every card has strArea, strInstructions, etc.
+            meals = await hydrateMeals(meals);
+
             setAllFetchedMeals(meals);
         } catch {
             setError("Failed to fetch recipes.");
         } finally {
             setIsLoading(false);
         }
-    }, [activeCategory]); // activeCategory is a real dependency here
+    }, [activeCategory, hydrateMeals]); // activeCategory is a real dependency here
 
     // 🔥 FILTER LOGIC — fixed: cuisine filter works independently of search
     useEffect(() => {
