@@ -111,10 +111,14 @@ const AppProvider = ({ children }) => {
                     }
                 });
 
-                // remove duplicates
-                meals = Array.from(
-                    new Map(combined.map((m) => [m.idMeal, m])).values()
-                );
+                // remove duplicates, preferring full data (with strArea) over partial data
+                const uniqueMeals = new Map();
+                combined.forEach((m) => {
+                    if (!uniqueMeals.has(m.idMeal) || (!uniqueMeals.get(m.idMeal).strArea && m.strArea)) {
+                        uniqueMeals.set(m.idMeal, m);
+                    }
+                });
+                meals = Array.from(uniqueMeals.values());
             }
 
             // Hydrate partial meals so every card has strArea, strInstructions, etc.
