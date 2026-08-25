@@ -35,7 +35,7 @@ A premium, high-performance React recipe discovery app powered by **TheMealDB AP
 Favorites state lives in the Context layer (`AppProvider`), not in component-level state. This eliminates the desync bug where `Recipes` and `Favorites` pages could display conflicting data. `localStorage` is hydrated lazily on init and updated atomically through a `toggleFavorite` action.
 
 ### 2. Hybrid Filtering Engine
-The app fetches once per search query using three concurrent API calls via `Promise.allSettled` (by name, by ingredient, by area), deduplicates results by `idMeal`, and stores the full result set in `allFetchedMeals`. Client-side cuisine filtering then runs at zero network cost.
+The app fetches once per search query using three concurrent API calls via `Promise.allSettled` (by name, by ingredient, by area), intelligently deduplicates results by `idMeal` (ensuring full-data API objects are preserved over partial data), and stores the full result set in `allFetchedMeals`. Client-side cuisine filtering then runs at zero network cost.
 
 ### 3. Progressive Data Hydration
 `RecipeDetails` first checks `location.state` for data passed during navigation (near-instant display). If the data is partial (e.g., from a category browse result missing `strInstructions`), it transparently fetches the full record via the lookup API in the background.
